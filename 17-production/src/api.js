@@ -4,7 +4,7 @@ const { ok } = require('assert');
 
 const env = process.env.NODE_ENV || "dev";
 
-ok(env === 'prod' || env === 'dev', 'env deve ser prod ou dev');
+ok(env === 'prod' || env === 'dev', 'Env deve ser prod ou dev');
 
 const configPath = join(__dirname, './../config', `.env.${env}`);
 config({
@@ -17,6 +17,7 @@ const MongoDB = require('./db/strategies/mongodb/mongodb');
 const HeroiSchema = require('./db/strategies/mongodb/schemas/heroisSchema')
 const HeroeRoute = require('./routes/heroeRoutes');
 const AuthRoute = require('./routes/authRoutes');
+const UtilRoute = require('./routes/utilRoutes');
 
 const Postgres = require('./db/strategies/postgres/postgres');
 const UsuarioSchema = require('./db/strategies/postgres/schemas/usuarioSchema');
@@ -79,8 +80,11 @@ async function main(){
 
     app.auth.default('jwt');
 
-    app.route([ ...mapRoutes(new HeroeRoute(context), HeroeRoute.methods()),
-        ...mapRoutes(new AuthRoute(contextPostgres, JWT_SECRET), AuthRoute.methods()) ]);
+    app.route([
+        ...mapRoutes(new HeroeRoute(context), HeroeRoute.methods()),
+        ...mapRoutes(new AuthRoute(contextPostgres, JWT_SECRET), AuthRoute.methods()),
+        ...mapRoutes(new UtilRoute(), UtilRoute.methods())
+    ]);
 
     await app.start();
     console.log('Servidor rodando na porta', app.info.port)
